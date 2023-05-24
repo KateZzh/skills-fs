@@ -15,6 +15,7 @@ function createSkill(title) {
   if (!bool) throw new Error("such title already exists");
 
   const item = { id: +data.length + 1, title };
+
   data.push(item);
 
   fs.writeFileSync(path, JSON.stringify(data));
@@ -22,4 +23,15 @@ function createSkill(title) {
   return data;
 }
 
-module.exports = { getAllSkill, createSkill };
+function deleteSkill(id) {
+  const data = JSON.parse(fs.readFileSync(path));
+
+  const filtered = data.filter((el) => el.id != id);
+  if (filtered.length == data.length) throw new Error("such id not found");
+
+  fs.writeFileSync(path, JSON.stringify(filtered));
+  
+  return filtered;
+}
+
+module.exports = { getAllSkill, createSkill, deleteSkill };
