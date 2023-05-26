@@ -1,40 +1,61 @@
-const express = require("express");
-const {
-  getAllSkill,
-  createSkill,
-  deleteSkill,
-} = require("../service/skill.service");
-const { isValidSkillId } = require("../helper/validation");
+const express = require('express');
+const { getAllSkill, createSkill, deleteSkill, updateSkill, getSkillById } = require('../service/skill.service');
+const { isValidSkillId, isValidSkillBody } = require('../helper/validation');
+const buildResponse = require('../helper/buildResponse');
 const route = express.Router();
 
-route.get("/", (req, res) => {
+route.get('/', (req, res) => {
   try {
     const data = getAllSkill();
-    res.status(200).send(data);
+
+    buildResponse(res, 200, data);
   } catch (error) {
-    res.status(404).send(error.message);
+    buildResponse(res, 404, error.message);
   }
 });
 
-route.post("/", (req, res) => {
+route.post('/', isValidSkillBody, (req, res) => {
   try {
     const { title } = req.body;
     const data = createSkill(title);
 
-    res.status(200).send(data);
+    buildResponse(res, 201, data);
   } catch (error) {
-    res.status(404).send(error.message);
+    buildResponse(res, 405, error.message);
   }
 });
 
-route.delete("/:id", isValidSkillId, (req, res) => {
+route.delete('/:id', isValidSkillId, (req, res) => {
   try {
     const { id } = req.params;
     const data = deleteSkill(id);
 
-    res.status(200).send(data);
+    buildResponse(res, 200, data);
   } catch (error) {
-    res.status(404).send(error.message);
+    buildResponse(res, 404, error.message);
+  }
+});
+
+route.put('/:id', isValidSkillId, isValidSkillBody, (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title } = req.body;
+    const data = updateSkill(id, title);
+
+    buildResponse(res, 200, data);
+  } catch (error) {
+    buildResponse(res, 404, error.message);
+  }
+});
+
+route.get('/:id', isValidSkillId, (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = getSkillById(id);
+
+    buildResponse(res, 200, data);
+  } catch (error) {
+    buildResponse(res, 404, error.message);
   }
 });
 
